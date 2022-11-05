@@ -1,0 +1,13 @@
+{ "animal"
+   { "1.5" }
+   { "vedetmatan"
+      { "vedetuFPMI"
+         { "R.V.V." }
+         { "P.A.U." }
+      }
+      { "Sing"
+         { "A.P." }
+         { "DED" }
+      }
+   }
+}
