@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "../tree_struct.h"
 #include "../tree/tree.h"
@@ -102,7 +103,7 @@ void give_definition (Tree *tree)
     char character[21] = {};
     scanf ("%s", character);//fgets
 
-    char definition[1000] = {};
+    char definition[200] = {};
 
     int status = find_character (tree, tree->root, character, definition);
 
@@ -143,7 +144,7 @@ int find_character (Tree *tree, Tnode *node, const char *character, char *defini
 
         number -= temp;
 
-        temp = sprintf (definition + number, "not %s, ", node->node_case);
+        temp = sprintf (definition + number, "doesn't %s, ", node->node_case);
         number += temp;
 
         if (find_character (tree, node->right, character, definition) == 1)
@@ -158,4 +159,79 @@ int find_character (Tree *tree, Tnode *node, const char *character, char *defini
     }
 
     return 0;
+}
+
+void compare (Tree *tree)
+{
+    printf ("enter first character to compare\n");
+    char first_character[21] = {};
+    scanf ("%s", first_character);
+
+    printf ("enter second character to compare\n");
+    char second_character[21] = {};
+    scanf ("%s", second_character);
+
+    char definition_1[200] = {};
+    char definition_2[200] = {};
+
+    int status_1 = find_character (tree, tree->root, first_character, definition_1);
+    int status_2 = find_character (tree, tree->root, second_character, definition_2);
+
+    if (status_1 && status_2)
+    {
+        printf ("%s %s, but %s ", first_character, definition_1, second_character);
+
+        char word_1[100] = {};
+        char word_2[100] = {};
+
+        getword (definition_1, word_1);
+        getword (definition_2, word_2);
+
+        //printf ("word1 is [%s]\n", word_1);
+        //printf ("word2 is [%s]\n", word_2);
+
+        int change = 0;
+
+        while (strcmp (word_1, word_2) == 0)
+        {
+            change += strlen (word_1);
+
+            //printf ("[%d]\n", change);
+
+            getword (definition_1 + change, word_1);
+            //printf ("word1 is [%s]\n", word_1);
+            getword (definition_2 + change, word_2);
+            //printf ("word2 is [%s]\n", word_2);
+        }
+
+        printf ("%s\n", definition_2 + change);
+    }
+    else
+    {
+        printf ("incorrect character name(s)\n");
+    }
+}
+
+char *getword (char *buf, char *word)
+{
+    int i = 0;
+
+    while (isspace (*(buf + i)))
+    {
+        i++;
+    }
+
+    while (!(isspace (*(buf + i))))
+    {
+        i++;
+    }
+    int space_elem = *(buf + i);
+    *(buf + i) = '\0';
+
+
+    strcpy (word, buf);
+
+    *(buf + i) = space_elem;
+
+    return word;
 }
