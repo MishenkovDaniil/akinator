@@ -14,6 +14,21 @@ void print_help_info (void);
 
 int main ()
 {
+    FILE *info_file = fopen (tree_info, "r");
+
+    int tree_info_size = get_file_size (tree_info);
+    char *buf = (char *)calloc (tree_info_size, sizeof (char));
+    assert (buf);
+
+    int buf_pos = 0;
+
+    Tree tree = {};
+    tree_ctor (&tree);
+
+    tree_fill (&tree, tree.root, info_file, buf, &buf_pos);
+
+    for (;;)
+    {
     printf ("choose game option (help for more info)\n");
 
     char option[10] = {};
@@ -24,20 +39,9 @@ int main ()
         *option == 'H')
     {
         print_help_info ();
-
-        return 0;
+        continue;
     }
 
-    FILE *info_file = fopen (tree_info, "r");
-
-    int tree_info_size = get_file_size (tree_info);
-    char *buf = (char *)calloc (tree_info_size, sizeof (char));
-    assert (buf);
-
-    Tree tree = {};
-    tree_ctor (&tree);
-
-    tree_fill (&tree, tree.root, info_file, buf);
 
     if (stricmp (option, "aki") == 0 ||
         stricmp (option, "akinator") == 0 ||
@@ -45,7 +49,7 @@ int main ()
         *option == 'A' ||
         *option == '1')
     {
-        aki_play (tree.root);
+        aki_play (&tree, tree.root, info_file, buf, &buf_pos);
     }
     else if (stricmp (option, "def") == 0 ||
              stricmp (option, "definition") == 0 ||
@@ -53,7 +57,7 @@ int main ()
              *option == 'D' ||
              *option == '2')
     {
-        ;
+        give_definition (&tree);
     }
     else if (stricmp (option, "comp") == 0 ||
              stricmp (option, "compare") == 0||
@@ -68,7 +72,7 @@ int main ()
              *option == 'S' ||
              *option == '4')
     {
-        tree_graph (&tree, info_file);
+        tree_graph (&tree);
     }
     else if (stricmp (option, "voice") == 0 ||
              *option == 'v' ||
@@ -77,23 +81,35 @@ int main ()
     {
         ;
     }
+    else if (stricmp (option, "quit") == 0 ||
+             *option == 'q' ||
+             *option == 'Q' ||
+             *option == '6')
+    {
+
+        break;
+    }
     else
     {
         printf ("ERROR: wrong command (%s)", option);
+    }
     }
 
     tree_dtor (&tree);
 
     free (buf);
     fclose (info_file);
+
+    return 0;
 }
 
 void print_help_info (void)
 {
     printf ("1 or akinator to start the game\n"
             "2 or define to receive the definition of character or give it to the new one\n"
-            "3 or compare to compare two characters"
-            "4 or show to see the akinator graph"
-            "5 or voice to turn voice");
+            "3 or compare to compare two characters\n"
+            "4 or show to see the akinator graph\n"
+            "5 or voice to turn voice\n"
+            "6 or quit to end the game\n");
 }
 
