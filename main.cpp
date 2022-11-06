@@ -29,70 +29,70 @@ int main ()
 
     for (;;)
     {
-    printf ("choose game option (help for more info)\n");
+        printf ("choose game option (help for more info)\n");
 
-    char option[10] = {};
-    scanf ("%s", option);
+        char option[10] = {};
+        scanf ("%s", option);
 
-    if (stricmp (option, "help") == 0 ||
-        *option == 'h' ||
-        *option == 'H')
-    {
-        print_help_info ();
-        continue;
-    }
+        if (stricmp (option, "help") == 0 ||
+            *option == 'h' ||
+            *option == 'H')
+        {
+            print_help_info ();
+            continue;
+        }
 
 
-    if (stricmp (option, "aki") == 0 ||
-        stricmp (option, "akinator") == 0 ||
-        *option == 'a' ||
-        *option == 'A' ||
-        *option == '1')
-    {
-        aki_play (&tree, tree.root, info_file, buf, &buf_pos);
-    }
-    else if (stricmp (option, "def") == 0 ||
-             stricmp (option, "definition") == 0 ||
-             *option == 'd' ||
-             *option == 'D' ||
-             *option == '2')
-    {
-        give_definition (&tree);
-    }
-    else if (stricmp (option, "comp") == 0 ||
-             stricmp (option, "compare") == 0||
-             *option == 'c' ||
-             *option == 'C' ||
-             *option == '3')
-    {
-        ;
-    }
-    else if (stricmp (option, "show") == 0 ||
-             *option == 's' ||
-             *option == 'S' ||
-             *option == '4')
-    {
-        tree_graph (&tree);
-    }
-    else if (stricmp (option, "voice") == 0 ||
-             *option == 'v' ||
-             *option == 'V' ||
-             *option == '5')
-    {
-        ;
-    }
-    else if (stricmp (option, "quit") == 0 ||
-             *option == 'q' ||
-             *option == 'Q' ||
-             *option == '6')
-    {
+        if (stricmp (option, "aki") == 0 ||
+            stricmp (option, "akinator") == 0 ||
+            *option == 'a' ||
+            *option == 'A' ||
+            *option == '1')
+        {
+            aki_play (&tree, tree.root, info_file, buf, &buf_pos);
+        }
+        else if (stricmp (option, "def") == 0 ||
+                stricmp (option, "definition") == 0 ||
+                *option == 'd' ||
+                *option == 'D' ||
+                *option == '2')
+        {
+            give_definition (&tree);
+        }
+        else if (stricmp (option, "comp") == 0 ||
+                stricmp (option, "compare") == 0||
+                *option == 'c' ||
+                *option == 'C' ||
+                *option == '3')
+        {
+            compare (&tree);
+        }
+        else if (stricmp (option, "show") == 0 ||
+                *option == 's' ||
+                *option == 'S' ||
+                *option == '4')
+        {
+            tree_graph (&tree);
+        }
+        else if (stricmp (option, "voice") == 0 ||
+                *option == 'v' ||
+                *option == 'V' ||
+                *option == '5')
+        {
+            ;
+        }
+        else if (stricmp (option, "quit") == 0 ||
+                *option == 'q' ||
+                *option == 'Q' ||
+                *option == '6')
+        {
 
-        break;
-    }
-    else
-    {
-        printf ("ERROR: wrong command (%s)", option);
-    }
+            break;
+        }
+        else
+        {
+            printf ("ERROR: wrong command (%s)", option);
+        }
     }
 
     tree_dtor (&tree);
