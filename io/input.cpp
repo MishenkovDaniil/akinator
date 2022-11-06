@@ -3,8 +3,8 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "../tree.h"
-#include "../akinator/akinator.h"
+#include "../tree_struct.h"
+#include "../tree/tree.h"
 #include "input.h"
 
 Tnode *tree_fill (Tree *tree, Tnode *node, FILE *file, char *buf)
@@ -16,7 +16,7 @@ Tnode *tree_fill (Tree *tree, Tnode *node, FILE *file, char *buf)
     static int number = 0;
 
     fscanf (file, "%s", str);
-    printf ("{ is [%c]\n", *str);
+    //printf ("{ is [%c]\n", *str);
 
     if (*str == '{')
     {

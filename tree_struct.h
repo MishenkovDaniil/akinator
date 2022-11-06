@@ -1,5 +1,5 @@
-#ifndef A_H
-#define A_H
+#ifndef TREE_STRUCT_H
+#define TREE_STRUCT_H
 
 struct Tnode
 {
@@ -14,4 +14,4 @@ struct Tree
     Tnode *root = nullptr;
 };
 
-#endif /*  A_H */
+#endif /* TREE_STRUCT_H */
