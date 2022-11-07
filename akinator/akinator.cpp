@@ -105,10 +105,12 @@ void give_definition (Tree *tree)
 
     char definition[200] = {};
 
-    int status = find_character (tree, tree->root, character, definition);
+    int status = 0;
+    find_character (tree, tree->root, character, definition, &status);
 
     if (status)
     {
+        printf ("status is %d\n", status);
         printf ("%s\n", definition);
     }
     else
@@ -117,9 +119,11 @@ void give_definition (Tree *tree)
     }
 }
 
-int find_character (Tree *tree, Tnode *node, const char *character, char *definition)
+int find_character (Tree *tree, Tnode *node, const char *character, char *definition, int *mask)
 {
     static int number = 0;
+    static int mask_shift = 0;
+
     int temp = 0;
 
     if (stricmp (node->node_case, character) == 0)
@@ -127,32 +131,45 @@ int find_character (Tree *tree, Tnode *node, const char *character, char *defini
         *(definition + number - 2) = '\0';
         number = 0;
 
-        return 1;
+        return *mask;
     }
     else if (node->left != nullptr && node->right != nullptr)
     {
         temp = sprintf (definition + number, "%s, ", node->node_case);
         number += temp;
 
-        if (find_character (tree, node->left, character, definition) == 1)
+        *mask |= 0x1 << mask_shift;
+        printf ("bleft %d\t",*mask);
+        mask_shift++;
+
+        if (find_character (tree, node->left, character, definition, mask) > 0)
         {
             *(definition + number - 2) = '\0';
             number = 0;
 
-            return 1;
+            mask_shift = 0;
+            return *mask;
         }
+
+        mask_shift--;
 
         number -= temp;
 
         temp = sprintf (definition + number, "doesn't %s, ", node->node_case);
         number += temp;
 
-        if (find_character (tree, node->right, character, definition) == 1)
+        *mask &= ~(0x1 << mask_shift);
+        printf ("bright %d\t", *mask);
+
+        mask_shift++;
+
+        if (find_character (tree, node->right, character, definition, mask) > 0)
         {
             *(definition + number - 2) = '\0';
             number = 0;
 
-            return 1;
+            mask_shift = 0;
+            return *mask;
         }
 
         number -= temp;
@@ -174,8 +191,10 @@ void compare (Tree *tree)
     char definition_1[200] = {};
     char definition_2[200] = {};
 
-    int status_1 = find_character (tree, tree->root, first_character, definition_1);
-    int status_2 = find_character (tree, tree->root, second_character, definition_2);
+    int status_1 = 0;
+    find_character (tree, tree->root, first_character, definition_1, &status_1);
+    int status_2 = 0;
+    find_character (tree, tree->root, second_character, definition_2, &status_2);
 
     if (status_1 && status_2)
     {
