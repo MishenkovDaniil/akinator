@@ -24,10 +24,10 @@ int main ()
     FILE *info_file = fopen (tree_info, "r");
 
     int tree_info_size = get_file_size (tree_info);
-    char *buf = (char *)calloc (tree_info_size, sizeof (char));///buffer of "akinator" cases
+    char *buf = (char *)calloc (tree_info_size, sizeof (char));     ///buffer of "akinator" cases
     assert (buf);
 
-    int buf_pos = 0; ///free position in buffer of "akinator" cases
+    int buf_pos = 0;                                                ///free position in buffer of "akinator" cases
 
     Tree tree = {};
     tree_ctor (&tree);
@@ -60,7 +60,7 @@ else
             continue;
         }
         //run_cmd ("help", "h", "h", "h", {print_help_info (); continue;}) -- what's better??
-        run_cmd ("akinator", "aki", "a", "1", {aki_play (&tree, tree.root, info_file, buf, &buf_pos);})
+        run_cmd ("akinator", "aki", "a", "1", {aki_play (&tree, tree.root, info_file, buf, &buf_pos, tree_info);})
         run_cmd ("definition", "def", "d", "2", {give_definition (&tree);})
         run_cmd ("compare", "comp", "c", "3", {compare (&tree);})
         run_cmd ("show", "show", "s", "4", {tree_graph (&tree);})

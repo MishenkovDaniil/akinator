@@ -8,15 +8,17 @@
 #include "akinator.h"
 #include "../io/output.h"
 
-void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos)
+void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos, const char *tree_info_file)
 {
     assert (tree && node);
     assert (file);
     assert (buf && buf_pos);
 
-    printf ("Is your character %s ?\n", node->node_case);
+    printf ("Is your character %s?\n", node->node_case);
 
-    char answer [4] = {};
+    const int MAX_ANSWER_SIZE = 5;
+
+    char answer [MAX_ANSWER_SIZE] = {};
     scanf ("%s", answer);
 
     if (stricmp (answer, "yes") == 0 ||
@@ -25,7 +27,7 @@ void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos)
     {
         if (node->left)
         {
-            aki_play (tree, node->left, file, buf, buf_pos);
+            aki_play (tree, node->left, file, buf, buf_pos, tree_info_file);
         }
         else
         {
@@ -38,23 +40,26 @@ void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos)
     {
         if (node->right)
         {
-            aki_play (tree, node->right, file, buf, buf_pos);
+            aki_play (tree, node->right, file, buf, buf_pos, tree_info_file);
         }
         else
         {
             printf ("hmm, you win, let's add this character to aki!\n");
-            add_character (tree, node, file, buf, buf_pos);
-            aki_play (tree, tree->root, file, buf, buf_pos);
+
+            add_character (tree, node, file, buf, buf_pos, tree_info_file);
+
+            aki_play (tree, tree->root, file, buf, buf_pos, tree_info_file);
         }
     }
     else
     {
         printf ("incorrect answer\n");
-        aki_play (tree, node, file, buf, buf_pos);
+
+        aki_play (tree, node, file, buf, buf_pos, tree_info_file);
     }
 }
 
-void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *buf_pos)
+void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *buf_pos, const char *tree_info_file)
 {
     assert (tree && node);
     assert (info_file);
@@ -90,7 +95,7 @@ void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *bu
 
     if (stricmp (answer, "yes") == 0 || stricmp (answer, "y") == 0)
     {
-        tree_print (tree, tree->root, "tree_info.txt"); //передавать const char to add character and aki_play
+        tree_print (tree, tree->root, tree_info_file); //передавать const char to add character and aki_play
     }
 }
 
@@ -110,7 +115,6 @@ void give_definition (Tree *tree)
 
     if (status)
     {
-        printf ("status is %d\n", status);
         printf ("%s\n", definition);
     }
     else
@@ -139,7 +143,6 @@ int find_character (Tree *tree, Tnode *node, const char *character, char *defini
         number += temp;
 
         *mask |= 0x1 << mask_shift;
-        printf ("bleft %d\t",*mask);
         mask_shift++;
 
         if (find_character (tree, node->left, character, definition, mask) > 0)
@@ -159,7 +162,6 @@ int find_character (Tree *tree, Tnode *node, const char *character, char *defini
         number += temp;
 
         *mask &= ~(0x1 << mask_shift);
-        printf ("bright %d\t", *mask);
 
         mask_shift++;
 
@@ -196,34 +198,48 @@ void compare (Tree *tree)
     int status_2 = 0;
     find_character (tree, tree->root, second_character, definition_2, &status_2);
 
-    if (status_1 && status_2)
+    int differ_mask = 0;
+    int similar_mask = 0;
+    int mask_shift = 0;
+
+    Tnode *node = tree->root;
+
+    if (status_1 > 0 && status_2 > 0)
     {
-        printf ("%s %s, but %s ", first_character, definition_1, second_character);
+        int search = (status_1 > status_2) ? status_1 : status_2;
 
-        char word_1[100] = {};
-        char word_2[100] = {};
+        printf ("%s and %s are both ", first_character, second_character);
 
-        getword (definition_1, word_1);
-        getword (definition_2, word_2);
-
-        //printf ("word1 is [%s]\n", word_1);
-        //printf ("word2 is [%s]\n", word_2);
-
-        int change = 0;
-
-        while (strcmp (word_1, word_2) == 0)
+        while (search > 0 && node != nullptr)
         {
-            change += strlen (word_1);
+            if ((status_1 & (0x1 << mask_shift)) == (status_2 & (0x1 << mask_shift)))
+            {
+                if ((status_1 & (0x1 << mask_shift)) == 1)
+                {
+                    printf ("%s, ", node->node_case);
 
-            //printf ("[%d]\n", change);
+                    node = node->left;
+                }
+                else
+                {
+                    printf ("doesn't %s, ", node->node_case);
 
-            getword (definition_1 + change, word_1);
-            //printf ("word1 is [%s]\n", word_1);
-            getword (definition_2 + change, word_2);
-            //printf ("word2 is [%s]\n", word_2);
+                    node = node->right;
+                }
+
+                similar_mask |= 0x1 << mask_shift;
+            }
+
+            search /= 2;
+            mask_shift++;
         }
 
-        printf ("%s\n", definition_2 + change);
+        printf ("\nbut %s ", first_character);
+        tree_print_mask (tree, similar_mask, status_1);
+
+        printf ("\nand %s ", second_character);
+        tree_print_mask (tree, similar_mask, status_2);
+        printf ("\n");
     }
     else
     {
