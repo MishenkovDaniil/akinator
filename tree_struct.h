@@ -10,8 +10,7 @@ struct Tnode
 
 struct Tree
 {
-    size_t size = 0;
-    Tnode *root = nullptr;
+    Tnode *root = nullptr;//add debug info
 };
 
 #endif /* TREE_STRUCT_H */
