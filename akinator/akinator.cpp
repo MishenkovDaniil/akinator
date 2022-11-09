@@ -10,6 +10,7 @@
 
 static const int MAX_DEF_LEN = 200;
 static const int MAX_NAME_LEN = 21;
+static const int MAX_ANSWER_SIZE = 5;
 
 void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos, const char *tree_info_file)
 {
@@ -19,7 +20,6 @@ void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos, con
 
     printf ("Is your character %s?\n", node->node_case);
 
-    const int MAX_ANSWER_SIZE = 5;
 
     char answer [MAX_ANSWER_SIZE] = {};
     scanf ("%s", answer);
@@ -72,7 +72,7 @@ void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *bu
 
     printf ("enter character name\n");
 
-    fgetc (stdin);
+    fgetc (stdin);//why works??
     scanf ("%[^\n]%n", buf + *buf_pos, &temp);
 
     *(buf + *buf_pos + temp) = '\0';
@@ -86,7 +86,7 @@ void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *bu
 
     temp = 0;
 
-    fgetc (stdin);
+    fgetc (stdin);//why works??
     scanf ("%[^\n]%n", buf + *buf_pos, &temp);//fgets
 
     *(buf + *buf_pos + temp) = '\0';
@@ -97,7 +97,7 @@ void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *bu
 
     printf ("do you want to save changes?");
 
-    char answer[5] = {};
+    char answer[MAX_ANSWER_SIZE] = {};
     scanf ("%s", answer);
 
     if (stricmp (answer, "yes") == 0 || stricmp (answer, "y") == 0)
