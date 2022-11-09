@@ -5,6 +5,12 @@
 #include "tree.h"
 #include "../tree_struct.h"
 
+Tnode *talloc (void)
+{
+    Tnode *node = (Tnode *)calloc (1, sizeof (Tnode));
+    return node;
+}
+
 void tree_ctor (Tree *tree, unsigned int *err)
 {
     assert (tree);
@@ -16,7 +22,9 @@ void tree_ctor (Tree *tree, unsigned int *err)
             printf ("wrong tree pointer");
             break;
         }
+
         tree->root = talloc ();
+        assert (tree->root);
 
         if (!(tree->root))
         {
@@ -24,15 +32,7 @@ void tree_ctor (Tree *tree, unsigned int *err)
             break;
         }
 
-        tree->size = 1;
-
     }while (0);
-}
-
-Tnode *talloc (void)
-{
-    Tnode *node = (Tnode *)calloc (1, sizeof (Tnode));
-    return node;
 }
 
 Tnode *add_left_node  (Tree *tree, Tnode *add_node, const char *left_case, unsigned int *err)
@@ -40,21 +40,18 @@ Tnode *add_left_node  (Tree *tree, Tnode *add_node, const char *left_case, unsig
     assert (tree);
     assert (add_node);
 
-    if (!(add_node))
+    if (add_node == nullptr)
     {
         printf ("TREE_ERROR: incorrect pointer to add node");
 
         return nullptr;
     }
-    /*
     if (left_case == nullptr)
     {
         fprintf (stderr, "TREE_ERROR: incorrect pointer to const char or nothing to add");
 
         return nullptr;
     }
-    */
-
     if (tree_check (tree, err))
     {
         printf ("ERROR");
@@ -66,7 +63,7 @@ Tnode *add_left_node  (Tree *tree, Tnode *add_node, const char *left_case, unsig
 
     if (new_node_left == nullptr)
     {
-        printf ("talloc failed, line %d", __LINE__);
+        printf ("talloc failed, line %d", __LINE__); //must be line at main
 
         return nullptr;
     }
@@ -91,15 +88,12 @@ Tnode *add_right_node (Tree *tree, Tnode *add_node, const char *right_case, unsi
 
         return nullptr;
     }
-    /*
     if (right_case == nullptr)
     {
         fprintf (stderr, "TREE_ERROR: incorrect pointer to const char or nothing to add");
 
         return nullptr;
     }
-    */
-
     if (tree_check (tree, err))
     {
         printf ("ERROR");
@@ -127,7 +121,10 @@ Tnode *add_right_node (Tree *tree, Tnode *add_node, const char *right_case, unsi
 
 Tnode *add_node (Tree *tree, Tnode *add_node, const char *left_case, const char *right_case, unsigned int *err)
 {
-    add_left_node (tree, add_node, left_case, err);
+    if (add_left_node (tree, add_node, left_case, err) == nullptr)
+    {
+        return nullptr;
+    }
 
     return add_right_node(tree, add_node, right_case, err);
 }
