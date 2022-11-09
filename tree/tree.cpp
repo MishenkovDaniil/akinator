@@ -46,12 +46,6 @@ Tnode *add_left_node  (Tree *tree, Tnode *add_node, const char *left_case, unsig
 
         return nullptr;
     }
-    if (left_case == nullptr)
-    {
-        fprintf (stderr, "TREE_ERROR: incorrect pointer to const char or nothing to add");
-
-        return nullptr;
-    }
     if (tree_check (tree, err))
     {
         printf ("ERROR");
@@ -85,12 +79,6 @@ Tnode *add_right_node (Tree *tree, Tnode *add_node, const char *right_case, unsi
     if (!(add_node))
     {
         printf ("TREE_ERROR: incorrect pointer to add_place");
-
-        return nullptr;
-    }
-    if (right_case == nullptr)
-    {
-        fprintf (stderr, "TREE_ERROR: incorrect pointer to const char or nothing to add");
 
         return nullptr;
     }
