@@ -8,6 +8,9 @@
 #include "akinator.h"
 #include "../io/output.h"
 
+static const int MAX_DEF_LEN = 200;
+static const int MAX_NAME_LEN = 21;
+
 void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos, const char *tree_info_file)
 {
     assert (tree && node);
@@ -67,20 +70,24 @@ void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *bu
 
     int temp = 0;
 
-    printf ("enter the name of character\n");
+    printf ("enter character name\n");
 
-    scanf ("%s%n", buf + *buf_pos, &temp);
+    fgetc (stdin);
+    scanf ("%[^\n]%n", buf + *buf_pos, &temp);
 
     *(buf + *buf_pos + temp) = '\0';
 
     add_node (tree, node, buf + *buf_pos, node->node_case);
+
+
     printf ("by what does %s differ from %s\n", buf + *buf_pos, node->node_case);//fgets
 
     *buf_pos += temp + 1;
 
     temp = 0;
 
-    scanf ("%s%n", buf + *buf_pos, &temp);//fgets
+    fgetc (stdin);
+    scanf ("%[^\n]%n", buf + *buf_pos, &temp);//fgets
 
     *(buf + *buf_pos + temp) = '\0';
 
@@ -95,7 +102,7 @@ void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *bu
 
     if (stricmp (answer, "yes") == 0 || stricmp (answer, "y") == 0)
     {
-        tree_print (tree, tree->root, tree_info_file); //передавать const char to add character and aki_play
+        tree_print (tree, tree->root, tree_info_file); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ const char to add character and aki_play
     }
 }
 
@@ -103,12 +110,13 @@ void give_definition (Tree *tree)
 {
     assert (tree);
 
+
     printf ("enter character name\n");
 
-    char character[21] = {};
+    char character[MAX_NAME_LEN] = {};
     scanf ("%s", character);//fgets
 
-    char definition[200] = {};
+    char definition[MAX_DEF_LEN] = {};
 
     int status = 0;
     find_character (tree, tree->root, character, definition, &status);
@@ -183,15 +191,15 @@ int find_character (Tree *tree, Tnode *node, const char *character, char *defini
 void compare (Tree *tree)
 {
     printf ("enter first character to compare\n");
-    char first_character[21] = {};
+    char first_character[MAX_NAME_LEN] = {};
     scanf ("%s", first_character);
 
     printf ("enter second character to compare\n");
-    char second_character[21] = {};
+    char second_character[MAX_NAME_LEN] = {};
     scanf ("%s", second_character);
 
-    char definition_1[200] = {};
-    char definition_2[200] = {};
+    char definition_1[MAX_DEF_LEN] = {};
+    char definition_2[MAX_DEF_LEN] = {};
 
     int status_1 = 0;
     find_character (tree, tree->root, first_character, definition_1, &status_1);
@@ -245,28 +253,4 @@ void compare (Tree *tree)
     {
         printf ("incorrect character name(s)\n");
     }
-}
-
-char *getword (char *buf, char *word)
-{
-    int i = 0;
-
-    while (isspace (*(buf + i)))
-    {
-        i++;
-    }
-
-    while (!(isspace (*(buf + i))))
-    {
-        i++;
-    }
-    int space_elem = *(buf + i);
-    *(buf + i) = '\0';
-
-
-    strcpy (word, buf);
-
-    *(buf + i) = space_elem;
-
-    return word;
 }
