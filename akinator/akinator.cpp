@@ -25,8 +25,7 @@ void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos, con
     scanf ("%s", answer);
 
     if (stricmp (answer, "yes") == 0 ||
-        stricmp (answer, "y")   == 0 ||
-        stricmp (answer, "да")  == 0)
+        stricmp (answer, "y")   == 0)
     {
         if (node->left)
         {
@@ -38,8 +37,7 @@ void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos, con
         }
     }
     else if (stricmp (answer, "no")  == 0 ||
-             stricmp (answer, "n")   == 0 ||
-             stricmp (answer, "нет") == 0)
+             stricmp (answer, "n")   == 0)
     {
         if (node->right)
         {
@@ -50,15 +48,19 @@ void aki_play (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos, con
             printf ("hmm, you win, let's add this character to aki!\n");
 
             add_character (tree, node, file, buf, buf_pos, tree_info_file);
-
-            aki_play (tree, tree->root, file, buf, buf_pos, tree_info_file);
         }
     }
     else
     {
-        printf ("incorrect answer\n");
+        printf ("incorrect answer\ncontinue?");
 
-        aki_play (tree, node, file, buf, buf_pos, tree_info_file);
+        scanf ("%s", answer);
+
+        if (stricmp (answer, "yes") == 0 ||
+            stricmp (answer, "y")   == 0)
+        {
+            aki_play (tree, node, file, buf, buf_pos, tree_info_file);
+        }
     }
 }
 
@@ -102,7 +104,7 @@ void add_character (Tree *tree, Tnode *node, FILE *info_file, char *buf, int *bu
 
     if (stricmp (answer, "yes") == 0 || stricmp (answer, "y") == 0)
     {
-        tree_print (tree, tree->root, tree_info_file); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ const char to add character and aki_play
+        tree_print (tree, tree->root, tree_info_file);
     }
 }
 
