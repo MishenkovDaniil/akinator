@@ -19,6 +19,8 @@ void print_help_info (void);
 
 int main ()
 {
+    printf ("WELCOME TO AKINATOR!\n");
+
     const char *tree_info = "tree_info.txt";
 
     FILE *info_file = fopen (tree_info, "r");
@@ -45,7 +47,7 @@ if (stricmp (option, full_name)  == 0 ||                        \
 else
 
     const int MAX_OPTION_LEN = 15;
-    char option[MAX_OPTION_LEN] = {};
+    char option[MAX_OPTION_LEN] = "";
 
     for (;;)
     {
