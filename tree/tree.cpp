@@ -191,7 +191,6 @@ void tree_graph (Tree *tree)
     fprintf (tree_log, "<pre>\n<img src = tree_dots/tree_dot%d.png>\n", PNG_FILE_NUMBER++);
 
     fclose (tree_log);
-    fclose (tgraph_file);
 }
 
 int make_graph_nodes (Tnode *node, FILE *tgraph_file)
