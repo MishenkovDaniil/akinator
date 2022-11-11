@@ -73,22 +73,28 @@ void tree_print (Tree *tree, const Tnode *node, const char *file)
     }
 }
 
-void tree_print_mask (Tree *tree, int similar_mask, int mask)
+void tree_print_mask (Tree *tree, const int similar_mask, const int mask)
 {
     Tnode *node = tree->root;
 
     int mask_shift = 0;
+    int is_print_comma = 0;
 
     while (node->right != nullptr || node->left != nullptr)
     {
         if ((similar_mask & (0x1 << mask_shift)) == 0)
         {
+            if (is_print_comma++)
+            {
+                printf (", ");
+            }
+
             if ((mask & (0x1 << mask_shift)) == 0)
             {
                 printf ("doesn't ");
             }
 
-            printf ("%s, ", node->node_case);
+            printf ("%s", node->node_case);
         }
 
         if (mask & (0x1 << mask_shift))
