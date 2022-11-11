@@ -163,7 +163,16 @@ void tree_graph (Tree *tree)
     static int PNG_FILE_NUMBER = 0;
 
     FILE *tgraph_file = fopen ("tree_graph", "w");
-    static FILE *tree_log  = fopen ("tree_dump.html", "w");
+    static FILE *tree_log  = nullptr;
+
+    if (!(PNG_FILE_NUMBER))
+    {
+        tree_log  = fopen ("tree_dump.html", "w");
+    }
+    else
+    {
+        tree_log  = fopen ("tree_dump.html", "a");
+    }
 
     fprintf (tgraph_file, "digraph\n{\n\t");
 
@@ -175,12 +184,14 @@ void tree_graph (Tree *tree)
     char cmd[100] = {};
     sprintf (cmd, "Dot tree_graph -T png -o tree_dots/tree_dot%d.png", PNG_FILE_NUMBER);
 
-    //printf ("%s", cmd);
+    printf ("%s", cmd);
 
     system ((const char *)cmd);
 
     fprintf (tree_log, "<pre>\n<img src = tree_dots/tree_dot%d.png>\n", PNG_FILE_NUMBER++);
 
+    fclose (tree_log);
+    fclose (tgraph_file);
 }
 
 int make_graph_nodes (Tnode *node, FILE *tgraph_file)
