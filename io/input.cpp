@@ -9,33 +9,36 @@
 
 Tnode *tree_fill (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos)
 {
-    const int MAX_STR_LEN = 100;
+    const int MAX_STR_LEN = 2;
 
-    char str[MAX_STR_LEN] = {};
-    char str_case[MAX_STR_LEN] = {};
+    char bracket[MAX_STR_LEN] = "";
     int temp = 0;
 
-    fscanf (file, "%s", str);
+    fscanf (file, "%s", bracket);
 
-    if (*str == '{')
+    if (*bracket == '{')
     {
-        fscanf (file, "%[^\"]", str_case);                  ///reads spaces before first "
-        fgetc (file);                                       ///reads first "
-        fscanf (file, "%[^\"]%n", buf + *buf_pos, &temp);   ///reads case (without "") in buffer
-        fgetc (file);                                       ///reads second "
+        int status = fscanf (file, " \"%[^\"]%n\"", buf + *buf_pos, &temp);    ///reads case
+
+        if (!(status))
+        {
+            printf ("ERROR: using names not in quotes\n");
+
+            return nullptr;
+        }
 
         node->node_case = (const char *)(buf + *buf_pos);
 
-        *buf_pos += temp;
+        *buf_pos += --temp;
         *(buf + *buf_pos) = '\0';
         (*buf_pos)++;
 
-        fscanf (file, "%s", str);
+        fscanf (file, "%s", bracket);
     }
 
-    if (*str == '{')
+    if (*bracket == '{')
     {
-        ungetc (*str, file);
+        ungetc (*bracket, file);
 
         add_node (tree, node, nullptr, nullptr);
 
@@ -45,10 +48,10 @@ Tnode *tree_fill (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos)
             return nullptr;
         }
 
-        fscanf (file, "%s", str);
+        fscanf (file, "%s", bracket);
     }
 
-    if (*str != '}')
+    if (*bracket != '}')
     {
         fprintf (stderr, "ERROR: syntax error");
 
