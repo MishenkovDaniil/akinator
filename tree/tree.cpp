@@ -3,11 +3,23 @@
 #include <stdlib.h>
 
 #include "tree.h"
-#include "../tree_struct.h"
 
-Tnode *talloc (void)
+// tree_alloc_node
+
+#define print(fmt, ...) printf ("%s: %d: " fmt "\n", __FUNCTION__, __LINE__, __VA_ARGS__)
+
+Node *tree_create_node (const char *data)
 {
-    Tnode *node = (Tnode *)calloc (1, sizeof (Tnode));
+    Node *node = (Node *)calloc (1, sizeof (Node));
+
+    if (node == nullptr)
+    {
+        const char *fail = "failed";
+        return print ("calloc %s", fail), nullptr;
+    }
+
+    node->data = data;
+
     return node;
 }
 
@@ -15,106 +27,44 @@ void tree_ctor (Tree *tree, unsigned int *err)
 {
     assert (tree);
 
-    do
+    if (tree == nullptr)
     {
-        if (tree == nullptr)
-        {
-            printf ("wrong tree pointer");
-            break;
-        }
+        printf ("wrong tree pointer");
+        return;
+    }
 
-        tree->root = talloc ();
-        assert (tree->root);
-
-        if (!(tree->root))
-        {
-            printf ("talloc failed");
-            break;
-        }
-
-    }while (0);
+    tree->root = tree_create_node ();
+    assert (tree->root);
 }
 
-Tnode *add_left_node  (Tree *tree, Tnode *add_node, const char *left_case, unsigned int *err)
+void add_node (Tree *tree, Node *parent_node, const char *left_case, const char *right_case, unsigned int *err)
 {
     assert (tree);
-    assert (add_node);
+    assert (parent_node);
 
-    if (add_node == nullptr)
+    if (parent_node == nullptr)
     {
-        printf ("TREE_ERROR: incorrect pointer to add node");
+        printf ("TREE_ERROR: incorrect pointer to parent node.\n");
 
-        return nullptr;
+        return;
     }
     if (tree_check (tree, err))
     {
-        printf ("ERROR");
-
-        return nullptr;
+        return;
     }
 
-    Tnode *new_node_left = talloc ();
+    Node *new_node_left = tree_create_node (left_case);
+    Node *new_node_right = tree_create_node (right_case);
 
-    if (new_node_left == nullptr)
+    if (new_node_left == nullptr || new_node_right == nullptr)
     {
-        printf ("talloc failed, line %d", __LINE__); //must be line at main
-
-        return nullptr;
+        return;
     }
 
-    add_node->left = new_node_left;
-
-    new_node_left->node_case = left_case;
+    parent_node->left = new_node_left;
+    parent_node->right = new_node_right;
 
     tree_check (tree, err);
-
-    return new_node_left;
-}
-
-Tnode *add_right_node (Tree *tree, Tnode *add_node, const char *right_case, unsigned int *err)
-{
-    assert (tree);
-    assert (add_node);
-
-    if (!(add_node))
-    {
-        printf ("TREE_ERROR: incorrect pointer to add_place");
-
-        return nullptr;
-    }
-    if (tree_check (tree, err))
-    {
-        printf ("ERROR");
-
-        return nullptr;
-    }
-
-    Tnode *new_node_right = talloc ();
-
-    if (new_node_right == nullptr)
-    {
-        printf ("talloc failed, line %d", __LINE__);
-
-        return nullptr;
-    }
-
-    add_node->right = new_node_right;
-
-    new_node_right->node_case = right_case;
-
-    tree_check (tree, err);
-
-    return new_node_right;
-}
-
-Tnode *add_node (Tree *tree, Tnode *add_node, const char *left_case, const char *right_case, unsigned int *err)
-{
-    if (add_left_node (tree, add_node, left_case, err) == nullptr)
-    {
-        return nullptr;
-    }
-
-    return add_right_node(tree, add_node, right_case, err);
 }
 
 void tree_dtor (Tree *tree, unsigned int *err)
@@ -131,7 +81,7 @@ void tree_dtor (Tree *tree, unsigned int *err)
     }
 }
 
-void tree_free (Tnode *node)
+void tree_free (Node *node)
 {
     if (node->left)
     {
@@ -193,7 +143,7 @@ void tree_graph (Tree *tree)
     fclose (tree_log);
 }
 
-int make_graph_nodes (Tnode *node, FILE *tgraph_file)
+int make_graph_nodes (Node *node, FILE *tgraph_file)
 {
     static int graph_num = 0;
 
@@ -204,14 +154,14 @@ int make_graph_nodes (Tnode *node, FILE *tgraph_file)
     {
         fprintf (tgraph_file, "node_%d [style = \"filled\", fillcolor = \"lightblue\", label = \"nullptr\"];\n\t", graph_num++);
     }
-    else if (node->node_case == nullptr)
+    else if (node->data == nullptr)
     {
         fprintf (tgraph_file, "node_%d [style = \"filled\", fillcolor = \"lightblue\", label = \"nullptr\"];\n\t", graph_num++);
     }
     else
     {
-      //  printf ("\n\ncase is %s\n\n", node->node_case);
-        fprintf (tgraph_file, "node_%d [style = \"filled\", fillcolor = \"lightblue\", label = \"%s\"];\n\t", graph_num++, node->node_case);
+      //  printf ("\n\ncase is %s\n\n", node->data);
+        fprintf (tgraph_file, "node_%d [style = \"filled\", fillcolor = \"lightblue\", label = \"%s\"];\n\t", graph_num++, node->data);
     }
 
     if (node != nullptr)
