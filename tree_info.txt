@@ -86,10 +86,7 @@
 				{ "P.A.U." }
 			}
 			{ "Sing"
-				{ "zavisimyj"
-					{ "derevenskij p'yanica" }
-					{ "A.P." }
-				}
+				{ "A.P." }
 				{ "sdaet akinatora"
 					{ "Daniil Mishenkov" }
 					{ "DED" }
