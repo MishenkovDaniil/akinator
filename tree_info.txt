@@ -1,13 +1,100 @@
 { "animal"
-   { "1.5" }
-   { "vedetmatan"
-      { "vedetuFPMI"
-         { "R.V.V." }
-         { "P.A.U." }
-      }
-      { "Sing"
-         { "A.P." }
-         { "DED" }
-      }
-   }
+	{ "like peanuts"
+		{ "hamster" }
+		{ "1.5" }
+	}
+	{ "CS professional player"
+		{ "currently playing CSGO"
+			{ "from Eastern Europe"
+				{ "TOP-10 team player"
+					{ "AWP player"
+						{ "Eastern European team player"
+							{ "Russian team player"
+								{ "MVP of Major"
+									{ "Jame" }
+									{ "sh1ro" }
+								}
+								{ "s1mple" }
+							}
+							{ "best player in past"
+								{ "Zywoo" }
+								{ "broky" }
+							}
+						}
+						{ "Won Major"
+							{ "in TOP-20 world best players"
+								{ "Russian player"
+									{ "electroNic" }
+									{ "Natus Vincere player"
+										{ "b1t" }
+										{ "ropz" }
+									}
+								}
+								{ "Won last Major (Brazil, November 2022)"
+									{ "Qikert" }
+									{ "Cloud9 player"
+										{ "with dyed hair"
+											{ "nafany" }
+											{ "interz" }
+										}
+										{ "Perfecto" }
+									}
+								}
+							}
+							{ "played in Major final"
+								{ "Niko" }
+								{ "Russian player"
+									{ "in TOP-20 world best players"
+										{ "young star"
+											{ "m0NESY" }
+											{ "Ax1le" }
+										}
+										{ "degster" }
+									}
+									{ "Natus Vincere player"
+										{ "sdy" }
+										{ "YEKINDAR" }
+									}
+								}
+							}
+						}
+					}
+					{ "cadiaN" }
+				}
+				{ "from Europe"
+					{ "device" }
+					{ "EliGE" }
+				}
+			}
+			{ "CS 1.6 player"
+				{ "played in Eastern Europe team"
+					{ "played in Natus Vincere"
+						{ "markeloff" }
+						{ "pashaBiceps" }
+					}
+					{ "GeT_RiGhT" }
+				}
+				{ "free agent now"
+					{ "Boombl4" }
+					{ "Zeus" }
+				}
+			}
+		}
+		{ "vedet matan"
+			{ "vedet u FPMI"
+				{ "R.V.V." }
+				{ "P.A.U." }
+			}
+			{ "Sing"
+				{ "zavisimyj"
+					{ "derevenskij p'yanica" }
+					{ "A.P." }
+				}
+				{ "sdaet akinatora"
+					{ "Daniil Mishenkov" }
+					{ "DED" }
+				}
+			}
+		}
+	}
 }
