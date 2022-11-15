@@ -2,17 +2,21 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "../tree/tree.h"
 #include "akinator.h"
 #include "../io/output.h"
 
+#define STACK_DEBUG
+
 #include "../../Stack/stack/stack.h"
 
 int find_character (Tree *tree, Node *node, const char *character, char *definition, Stack *stack);
+int fill_character_stack (Tree *tree, Node *node, const char *character, Stack *stack);
 
-static const int MAX_DEF_LEN = 200;
-static const int MAX_NAME_LEN = 21;
+static const int MAX_DEF_LEN = 400;
+static const int MAX_NAME_LEN = 41;
 static const int MAX_ANSWER_LEN = 5;
 
 int is_yes_answer (const char *answer)
@@ -28,7 +32,7 @@ int is_no_answer (const char *answer)
 
 int is_continue (char *input)
 {
-    printf ("incorrect input, continue? (y/n)");
+    printf ("Incorrect input, continue? (y/n)");
 
     scanf ("%s", input);
 
@@ -68,7 +72,7 @@ void aki_play (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos, cons
             }
             else
             {
-                printf ("so easy..\nlet's try something more harder\n");
+                printf ("So easy..\nlet's try something more harder.\n");
                 return;
             }
         }
@@ -80,7 +84,7 @@ void aki_play (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos, cons
             }
             else
             {
-                printf ("hmm, you win, let's add this character to aki!\n");
+                printf ("Hmm, you win, let's add this character to aki!\n");
 
                 add_character (tree, node, file, buf, buf_pos, tree_info_file);
 
@@ -111,8 +115,8 @@ struct BigArray
 array_write(size)
 array_read(size)
 */
-/*
-Node *add_character (Tree *tree, Node *node)
+
+/*Node *add_character (Tree *tree, Node *node)
 {
 
 .....
@@ -133,30 +137,41 @@ void add_character (Tree *tree, Node *node, FILE *info_file, char *buf, int *buf
 
     int temp = 0;
 
-    printf ("enter character name\n");
+    printf ("Enter character name\n");
 
     scanf ("\n%[^\n]%n", buf + *buf_pos, &temp);
-
     *(buf + *buf_pos + temp) = '\0';
 
-    add_node (tree, node, buf + *buf_pos, node->data);
+    Node *new_character = tree_create_node (buf + *buf_pos);
 
-
-    printf ("by what does %s differ from %s\n", buf + *buf_pos, node->data);
-
+    printf ("By what does %s differ from %s\n", buf + *buf_pos, node->data);
     *buf_pos += temp + 1;
-
     temp = 0;
 
     scanf ("\n%[^\n]%n", buf + *buf_pos, &temp);
-
     *(buf + *buf_pos + temp) = '\0';
 
-    node->data = buf + *buf_pos;
+    Node *differ_node = tree_create_node (buf + *buf_pos);
 
     *buf_pos += temp + 1;
 
-    printf ("do you want to save changes?");
+    if (node->parent->left == node)
+    {
+        node->parent->left = differ_node;
+    }
+    else
+    {
+        node->parent->right = differ_node;
+    }
+
+    differ_node->parent = node->parent;
+    differ_node->left = new_character;
+    differ_node->right = node;
+
+    node->parent = differ_node;
+    new_character->parent = differ_node;
+
+    printf ("Do you want to save changes?(y/n)");
 
     char answer[MAX_ANSWER_LEN] = "";
     scanf ("%s", answer);
@@ -171,7 +186,7 @@ void give_definition (Tree *tree)
 {
     assert (tree);
 
-    printf ("enter character name: ");
+    printf ("Enter character name: ");
 
     char character[MAX_NAME_LEN] = "";
     scanf (" %[^\n]", character);//fgets
@@ -179,19 +194,21 @@ void give_definition (Tree *tree)
     char definition[MAX_DEF_LEN] = "";
 
     Stack stk = {};
-    stack_init (&stk, 10);
+    unsigned int stk_size = 10;
+    stack_init (&stk, stk_size);
 
     find_character (tree, tree->root, character, definition, &stk);
 
     if (stk.size)
     {
-        printf ("%s\n", definition);
+        *definition -= 32;
+        printf ("%s.\n\n", definition);
     }
     else
     {
-        printf ("no such character :(\n");
+        printf ("No such character :(\n\n");
     }
-
+    //printf ("1");
     stack_dtor (&stk);
 }
 
@@ -225,8 +242,8 @@ int find_character (Tree *tree, Node *node, const char *character, char *definit
         {
             stack_push (stack, 1);
 
-            *(definition + number - 2) = '\0';
-            number = 0;
+            //*(definition + number - 2) = '\0';
+            //number = 0;
 
             return true;
         }
@@ -238,8 +255,8 @@ int find_character (Tree *tree, Node *node, const char *character, char *definit
         {
             stack_push (stack, 0);
 
-            *(definition + number - 2) = '\0';
-            number = 0;
+            //*(definition + number - 2) = '\0';
+            //number = 0;
 
             return true;
         }
@@ -248,6 +265,35 @@ int find_character (Tree *tree, Node *node, const char *character, char *definit
     }
 
     return false;
+}
+
+int fill_character_stack (Tree *tree, Node *node, const char *character, Stack *stack)
+{
+    if (node->data)
+    {
+        if (stricmp (node->data, character) == 0)
+        {
+            return 1;
+        }
+    }
+    else if (node->left != nullptr && node->right != nullptr)
+    {
+        if (fill_character_stack (tree, node->left, character, stack) == 1)
+        {
+            stack_push (stack, 1);
+            return 1;
+        }
+        else if (fill_character_stack (tree, node->right, character, stack) == 1)
+        {
+            stack_push (stack, 0);
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return 0;
 }
 
 void compare (Tree *tree)
@@ -260,25 +306,23 @@ void compare (Tree *tree)
     char second_character[MAX_NAME_LEN] = "";
     scanf (" %[^\n]", second_character);
 
-    char definitionn_1[MAX_DEF_LEN] = "";
-    char definitionn_2[MAX_DEF_LEN] = "";
+    char definition_1[MAX_DEF_LEN] = "";
+    char definition_2[MAX_DEF_LEN] = "";
 
-    char *definition_1 = definitionn_1;
-    char *definition_2 = definitionn_2;
+    unsigned int stk_size = 20;
 
     Stack stk_1 = {};
-    stack_init (&stk_1, 10);
+    stack_init (&stk_1, stk_size);
 
-    find_character (tree, tree->root, first_character, definition_1, &stk_1);
-
+    int status_1 = find_character (tree, tree->root, first_character, definition_1, &stk_1);
     Stack stk_2 = {};
-    stack_init (&stk_2, 10);
+    stack_init (&stk_2, stk_size);
 
-    find_character (tree, tree->root, second_character, definition_2, &stk_2);
+    int status_2 = find_character (tree, tree->root, second_character, definition_2, &stk_2);
 
     Node *node = tree->root;
 
-    if (!(stk_1.size && stk_2.size))
+    if (!(status_1 && status_2))
     {
         stack_dtor  (&stk_2);
         stack_dtor  (&stk_1);
@@ -296,21 +340,21 @@ void compare (Tree *tree)
     int is_true_data_1 = stack_pop (&stk_1);
     int is_true_data_2 = stack_pop (&stk_2);
     int is_start = 1;
-    int comma_size = 0;
+    int comma_size = 2;
+    int shift = 0;
+   // printf ("def_1: %s\n", definition_1);
 
-    printf ("%s and %s ", first_character, second_character);
+    printf ("\n%s and %s ", first_character, second_character);
 
     while (is_true_data_1 == is_true_data_2)
     {
         if (is_start)
         {
-            comma_size = 0;
             printf ("are both ");
             is_start = 0;
         }
         else
         {
-            comma_size = 2;
             printf (", ");
         }
 
@@ -318,19 +362,31 @@ void compare (Tree *tree)
         {
             printf ("%s", node->data);
 
-            definition_1 += sizeof (node->data) + comma_size;
-            definition_2 += sizeof (node->data) + comma_size;
+            shift += strlen (node->data) + comma_size;
 
-            node = node->left;
+            if (node->left)
+            {
+                node = node->left;
+            }
+            else
+            {
+                break;
+            }
         }
         else
         {
             printf ("doesn't %s", node->data);
 
-            definition_1 += sizeof (node->data) + sizeof ("doesn't") + comma_size;
-            definition_2 += sizeof (node->data) + sizeof ("doesn't") + comma_size;
+            shift += strlen (node->data) + strlen ("doesn't ") + comma_size;
 
-            node = node->right;
+            if (node->right)
+            {
+                node = node->right;
+            }
+            else
+            {
+                break;
+            }
         }
 
         if (stk_1.size && stk_2.size)
@@ -348,13 +404,17 @@ void compare (Tree *tree)
     {
         printf ("have nothing in similar");
     }
-    printf ("\n");
+    printf (".\n");
     if (is_true_data_1 != is_true_data_2)
     {
-        printf ("distinctive qualities of %s: %s\n", first_character, definition_1);
-        printf ("distinctive qualities of %s: %s.\n", second_character, definition_2);
+     //   printf ("def_1: %s\n", definition_1);
+       // printf ("def_2: %s\n", definition_2);
+
+        //printf ("%d\n", shift);
+        printf ("Distinctive qualities of %s: %s.\n", first_character, definition_1 + shift);
+        printf ("Distinctive qualities of %s: %s.\n\n", second_character, definition_2 + shift);
     }
 
-    stack_dtor  (&stk_1);
     stack_dtor  (&stk_2);
+    stack_dtor  (&stk_1);
 }
