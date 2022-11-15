@@ -4,18 +4,16 @@
 
 #include "tree.h"
 
-// tree_alloc_node
-
-#define print(fmt, ...) printf ("%s: %d: " fmt "\n", __FUNCTION__, __LINE__, __VA_ARGS__)
+#define print(fmt, ...) printf ("%s: %d: " fmt "\n", __FUNCTION__, __LINE__, __VA_ARGS__) ////
 
 Node *tree_create_node (const char *data)
 {
     Node *node = (Node *)calloc (1, sizeof (Node));
+    assert (node);
 
     if (node == nullptr)
     {
-        const char *fail = "failed";
-        return print ("calloc %s", fail), nullptr;
+        return printf ("calloc failed"), nullptr;
     }
 
     node->data = data;
@@ -64,6 +62,9 @@ void add_node (Tree *tree, Node *parent_node, const char *left_case, const char 
     parent_node->left = new_node_left;
     parent_node->right = new_node_right;
 
+    new_node_left->parent = parent_node;
+    new_node_right->parent = parent_node;
+
     tree_check (tree, err);
 }
 
@@ -85,22 +86,30 @@ void tree_free (Node *node)
 {
     if (node->left)
     {
+        node->left->data = nullptr;
         tree_free(node->left);
     }
     if (node->right)
     {
+        node->right->data = nullptr;
         tree_free(node->right);
     }
 
     free (node);
+    node = nullptr;
 }
 
 
 unsigned int tree_check (Tree *tree, unsigned int *err)
 {
-    if (*err) tree_dump (tree, err);
+    if (*err)
+    {
+        tree_dump (tree, err);
 
-    return *err;
+        return *err;
+    }
+
+    return 0;
 }
 
 void tree_dump (Tree *tree, unsigned int *err)
@@ -113,7 +122,7 @@ void tree_graph (Tree *tree)
     static int PNG_FILE_NUMBER = 0;
 
     FILE *tgraph_file = fopen ("tree_graph", "w");
-    static FILE *tree_log  = nullptr;
+    FILE *tree_log  = nullptr;
 
     if (!(PNG_FILE_NUMBER))
     {
@@ -131,7 +140,9 @@ void tree_graph (Tree *tree)
     fprintf (tgraph_file, "}");
     fclose (tgraph_file);
 
-    char cmd[100] = {};
+    const int CMD_LEN = 100;
+    char cmd[CMD_LEN] = "";
+
     sprintf (cmd, "Dot tree_graph -T png -o tree_dots/tree_dot%d.png", PNG_FILE_NUMBER);
 
     printf ("%s", cmd);
@@ -148,7 +159,6 @@ int make_graph_nodes (Node *node, FILE *tgraph_file)
     static int graph_num = 0;
 
     int node_num = graph_num;
-    //printf ("%d", node_num);
 
     if (node == nullptr)
     {
@@ -160,11 +170,10 @@ int make_graph_nodes (Node *node, FILE *tgraph_file)
     }
     else
     {
-      //  printf ("\n\ncase is %s\n\n", node->data);
         fprintf (tgraph_file, "node_%d [style = \"filled\", fillcolor = \"lightblue\", label = \"%s\"];\n\t", graph_num++, node->data);
     }
 
-    if (node != nullptr)
+    if (node->left != nullptr && node->right != nullptr)
     {
         int left = make_graph_nodes (node->left, tgraph_file);
         int right = make_graph_nodes (node->right, tgraph_file);

@@ -4,10 +4,11 @@
 //#include "C:\Users\ASUS\Downloads\CodeBlocks\MinGW\x86_64-w64-mingw32\include\sapi.h"
 //#include "C:\Users\ASUS\Downloads\CodeBlocks\MinGW\x86_64-w64-mingw32\include\winapifamily.h"
 //#include <festival.h>
+//#include <sapi.h>
 
-#include "tree_struct.h"
 #include "tree/tree.h"
 #include "io/input.h"
+#include "io/output.h"
 #include "../standart_functions/io/io.h"
 #include "akinator/akinator.h"
 //#define TX_USE_SPEAK
@@ -51,7 +52,7 @@ else
 
     for (;;)
     {
-        printf ("choose game option (help for more info)\n");
+        printf ("Choose game option (\"help\" for more info):\n");
 
         scanf ("%s", option);
 
@@ -86,11 +87,12 @@ else
 
 void print_help_info (void)
 {
-    printf ("1 or akinator to start the game\n"
-            "2 or define to receive the definition of character or give it to the new one\n"
-            "3 or compare to compare two characters\n"
-            "4 or show to see the akinator graph\n"
-            "5 or voice to turn voice\n"
-            "6 or quit to end the game\n");
+    printf ("\"aki\"/\"akinator\"       start the game;\n"
+            "\"def\"/\"definition\"     receive the definition of character;\n"
+            "\"comp\"/\"compare\"       compare two characters;\n"
+            "\"show\"                 receive the akinator graph;\n"
+            "\"voice\"                turn on voice;\n"
+            "\"quit\"                 end the game;\n"
+            "\"help\"                 see this message.\n\n");
 }
 
