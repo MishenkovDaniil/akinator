@@ -1,9 +1,13 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include "../tree_struct.h"
 #include "../tree/tree.h"
 
-Tnode *tree_fill (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos);
+// tree_load --> tree.h
+// tree_save --> tree.h
+Node *tree_load (Tree *tree, FILE *from);
+Node *tree_save (Tree *tree, FILE *to);
+
+Node *tree_fill (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos);
 
 #endif /* INPUT_H */

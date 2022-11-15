@@ -3,11 +3,10 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "../tree_struct.h"
 #include "../tree/tree.h"
 #include "input.h"
 
-Tnode *tree_fill (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos)
+Node *tree_fill (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos)
 {
     const int MAX_STR_LEN = 2;
 
@@ -27,7 +26,7 @@ Tnode *tree_fill (Tree *tree, Tnode *node, FILE *file, char *buf, int *buf_pos)
             return nullptr;
         }
 
-        node->node_case = (const char *)(buf + *buf_pos);
+        node->data = (const char *)(buf + *buf_pos);
 
         *buf_pos += --temp;
         *(buf + *buf_pos) = '\0';
