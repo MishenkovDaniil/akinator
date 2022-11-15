@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "../tree_struct.h"
 #include "../tree/tree.h"
+#include "output.h"
 
-void tree_print (Tree *tree, const Tnode *node, const char *file)
+void tree_print (Tree *tree, const Node *node, const char *file)
 {
     static int tab_num = 1;                         ///number of tabs to put before case
 
@@ -25,7 +25,7 @@ void tree_print (Tree *tree, const Tnode *node, const char *file)
         fprintf (stderr, "fopen failed\n function: %s\nfile: %s", __PRETTY_FUNCTION__, __FILE__);
     }
 
-    fprintf (tree_info, "{ \"%s\"", node->node_case);
+    fprintf (tree_info, "{ \"%s\"", node->data);
 
     if (node->left != nullptr && node->right != nullptr)
     {
@@ -70,42 +70,5 @@ void tree_print (Tree *tree, const Tnode *node, const char *file)
         fprintf (tree_info, " }\n");
 
         fclose (tree_info);
-    }
-}
-
-void tree_print_mask (Tree *tree, const int similar_mask, const int mask)
-{
-    Tnode *node = tree->root;
-
-    int mask_shift = 0;
-    int is_print_comma = 0;
-
-    while (node->right != nullptr || node->left != nullptr)
-    {
-        if ((similar_mask & (0x1 << mask_shift)) == 0)
-        {
-            if (is_print_comma++)
-            {
-                printf (", ");
-            }
-
-            if ((mask & (0x1 << mask_shift)) == 0)
-            {
-                printf ("doesn't ");
-            }
-
-            printf ("%s", node->node_case);
-        }
-
-        if (mask & (0x1 << mask_shift))
-        {
-            node = node->left;
-        }
-        else
-        {
-            node = node->right;
-        }
-
-        mask_shift++;
     }
 }
