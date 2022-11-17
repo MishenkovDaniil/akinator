@@ -2,9 +2,30 @@
 #include <assert.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdarg.h>
+#include <stdlib.h>
 
 #include "../tree/tree.h"
 #include "input.h"
+
+int system_voice (char *cmd, int num, ...)
+{
+    va_list str = nullptr;
+
+    va_start (str, num);
+
+    for (int i = 0; i < num; i++)
+    {
+        char *string = va_arg (str, char *);
+        strcat (cmd, string);
+    }
+
+    system (cmd);
+    *cmd = '\0';
+    va_end (str);
+
+    return 0;
+}
 
 Node *tree_fill (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos)
 {

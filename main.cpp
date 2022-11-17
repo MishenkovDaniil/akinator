@@ -1,19 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-//#include "C:\Users\ASUS\Downloads\CodeBlocks\MinGW\x86_64-w64-mingw32\include\sapi.h"
-//#include "C:\Users\ASUS\Downloads\CodeBlocks\MinGW\x86_64-w64-mingw32\include\winapifamily.h"
-//#include <festival.h>
-//#include <sapi.h>
+#include <strings.h>
 
 #include "tree/tree.h"
 #include "io/input.h"
 #include "io/output.h"
 #include "../standart_functions/io/io.h"
 #include "akinator/akinator.h"
-//#define TX_USE_SPEAK
-//#include "../TX/TXLib.h"
-
 
 void print_help_info (void);
 
@@ -22,11 +16,15 @@ int main ()
 {
     printf ("WELCOME TO AKINATOR!\n");
 
+    char *cmd = (char *)calloc (100, sizeof (char));
+
+    system_voice (cmd, 1, "..\\balcon -n Irina -t \"WELCOME TO AKINATOR\"");
+
     const char *tree_info = "tree_info.txt";
 
     FILE *info_file = fopen (tree_info, "r");
 
-    int tree_info_size = get_file_size (tree_info);
+    size_t tree_info_size = get_file_size (tree_info);
     char *buf = (char *)calloc (tree_info_size, sizeof (char));     ///buffer of "akinator" cases
     assert (buf);
 
@@ -38,10 +36,10 @@ int main ()
     tree_fill (&tree, tree.root, info_file, buf, &buf_pos);
 
 #define run_cmd(full_name, short_name, letter, number, action)  \
-if (stricmp (option, full_name)  == 0 ||                        \
-    stricmp (option, short_name) == 0 ||                        \
-    stricmp (option, letter)     == 0 ||                        \
-    stricmp (option, number)     == 0)                          \
+if (strcasecmp (option, full_name)  == 0 ||                        \
+    strcasecmp (option, short_name) == 0 ||                        \
+    strcasecmp (option, letter)     == 0 ||                        \
+    strcasecmp (option, number)     == 0)                          \
 {                                                               \
     action                                                      \
 }                                                               \
@@ -53,11 +51,12 @@ else
     for (;;)
     {
         printf ("Choose game option (\"help\" for more info):\n");
+        system_voice (cmd, 1, "..\\balcon -n Irina -t \" Choose game option\"");
 
         scanf ("%s", option);
 
-        if (stricmp (option, "help") == 0 ||
-            stricmp (option, "h")    == 0)
+        if (strcasecmp (option, "help") == 0 ||
+            strcasecmp (option, "h")    == 0)
         {
             print_help_info ();
             continue;
@@ -71,6 +70,7 @@ else
         /*else*/
         {
             printf ("ERROR: wrong command (%s)", option);
+            system_voice (cmd, 3, "..\\balcon -n Irina -t \" wrong command ", option, "\"");
         }
     }
 
@@ -80,6 +80,7 @@ else
 
     free (buf);
     fclose (info_file);
+    free (cmd);
 
     return 0;
 }

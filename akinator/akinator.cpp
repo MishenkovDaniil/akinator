@@ -2,10 +2,11 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
-#include <string.h>
+#include <strings.h>
 
 #include "../tree/tree.h"
 #include "akinator.h"
+#include "../io/input.h"
 #include "../io/output.h"
 
 #define STACK_DEBUG
@@ -16,23 +17,30 @@ int find_character (Tree *tree, Node *node, const char *character, char *definit
 int fill_character_stack (Tree *tree, Node *node, const char *character, Stack *stack);
 
 static const int MAX_DEF_LEN = 400;
+static const int BALCON_LEN = 50;
 static const int MAX_NAME_LEN = 41;
 static const int MAX_ANSWER_LEN = 5;
 
 int is_yes_answer (const char *answer)
 {
-    return stricmp (answer, "yes") == 0 ||
-           stricmp (answer, "y")   == 0;
+    return strcasecmp (answer, "yes") == 0 ||
+           strcasecmp (answer, "y")   == 0;
 }
 int is_no_answer (const char *answer)
 {
-    return stricmp (answer, "no") == 0 ||
-           stricmp (answer, "n")  == 0;
+    return strcasecmp (answer, "no") == 0 ||
+           strcasecmp (answer, "n")  == 0;
 }
 
 int is_continue (char *input)
 {
     printf ("Incorrect input, continue? (y/n)");
+
+    char *cmd = (char *)calloc (BALCON_LEN + MAX_ANSWER_LEN, sizeof (char));
+
+    system_voice (cmd, 1, "..\\balcon -n Irina -t \"Incorrect input, continue?\"");
+
+    free (cmd);
 
     scanf ("%s", input);
 
@@ -59,9 +67,13 @@ void aki_play (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos, cons
 
     char answer [MAX_ANSWER_LEN] = "";
 
+    char *cmd = (char *)calloc (BALCON_LEN + MAX_NAME_LEN, sizeof (char));
+
     while (node != nullptr)
     {
         printf ("Is your character %s?\n", node->data);
+        system_voice (cmd, 3, "..\\balcon -n Irina -t \"Is your character ", node->data, "?\"");
+
         scanf ("%s", answer);
 
         if (is_yes_answer (answer))
@@ -73,6 +85,9 @@ void aki_play (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos, cons
             else
             {
                 printf ("So easy..\nlet's try something more harder.\n");
+
+                system_voice (cmd, 1, "..\\balcon -n Irina -t \"So easy, let's try something more harder \"");
+
                 return;
             }
         }
@@ -85,6 +100,7 @@ void aki_play (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos, cons
             else
             {
                 printf ("Hmm, you win, let's add this character to aki!\n");
+                system_voice (cmd, 1, "..\\balcon -n Irina -t \"Hmm, you win, let's add this character to aki\"");
 
                 add_character (tree, node, file, buf, buf_pos, tree_info_file);
 
@@ -101,6 +117,8 @@ void aki_play (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos, cons
             return;
         }
     }
+
+    free (cmd);
 }
 /*
 struct BigArray
@@ -137,7 +155,10 @@ void add_character (Tree *tree, Node *node, FILE *info_file, char *buf, int *buf
 
     int temp = 0;
 
+    char *cmd = (char *)calloc (BALCON_LEN + MAX_NAME_LEN, sizeof (char));
+
     printf ("Enter character name\n");
+    system_voice (cmd, 1, "..\\balcon -n Irina -t \"Enter character name\"");
 
     scanf ("\n%[^\n]%n", buf + *buf_pos, &temp);
     *(buf + *buf_pos + temp) = '\0';
@@ -145,6 +166,8 @@ void add_character (Tree *tree, Node *node, FILE *info_file, char *buf, int *buf
     Node *new_character = tree_create_node (buf + *buf_pos);
 
     printf ("By what does %s differ from %s\n", buf + *buf_pos, node->data);
+    system_voice (cmd, 1, "..\\balcon -n Irina -t \"Enter character name\"");
+
     *buf_pos += temp + 1;
     temp = 0;
 
@@ -172,21 +195,27 @@ void add_character (Tree *tree, Node *node, FILE *info_file, char *buf, int *buf
     new_character->parent = differ_node;
 
     printf ("Do you want to save changes?(y/n)");
+    system_voice (cmd, 1, "..\\balcon -n Irina -t \"Enter character name\"");
 
     char answer[MAX_ANSWER_LEN] = "";
     scanf ("%s", answer);
 
-    if (stricmp (answer, "yes") == 0 || stricmp (answer, "y") == 0)
+    if (strcasecmp (answer, "yes") == 0 || strcasecmp (answer, "y") == 0)
     {
         tree_print (tree, tree->root, tree_info_file);
     }
+
+    free (cmd);
 }
 
 void give_definition (Tree *tree)
 {
     assert (tree);
 
+    char *cmd = (char *)calloc (BALCON_LEN + MAX_DEF_LEN, sizeof (char));
+
     printf ("Enter character name: ");
+    system_voice (cmd, 1, "..\\balcon -n Irina -t \"Enter character name\"");
 
     char character[MAX_NAME_LEN] = "";
     scanf (" %[^\n]", character);//fgets
@@ -194,22 +223,26 @@ void give_definition (Tree *tree)
     char definition[MAX_DEF_LEN] = "";
 
     Stack stk = {};
-    unsigned int stk_size = 10;
+    int stk_size = 10;
     stack_init (&stk, stk_size);
 
     find_character (tree, tree->root, character, definition, &stk);
 
     if (stk.size)
     {
-        *definition -= 32;
+        *definition -= (char)32;
+
         printf ("%s.\n\n", definition);
+        system_voice (cmd, 3, "..\\balcon -n Irina -t \" ", definition, "\"");
     }
     else
     {
         printf ("No such character :(\n\n");
+        system_voice (cmd, 1, "..\\balcon -n Irina -t \"No such character\"");
     }
-    //printf ("1");
+
     stack_dtor (&stk);
+    free (cmd);
 }
 
 int find_character (Tree *tree, Node *node, const char *character, char *definition, Stack *stack)
@@ -220,7 +253,7 @@ int find_character (Tree *tree, Node *node, const char *character, char *definit
     int comma_size = 0;
     int temp = 0;
 
-    if (stricmp (node->data, character) == 0)
+    if (strcasecmp (node->data, character) == 0)
     {
         *(definition + number) = '\0';
         number = 0;
@@ -271,7 +304,7 @@ int fill_character_stack (Tree *tree, Node *node, const char *character, Stack *
 {
     if (node->data)
     {
-        if (stricmp (node->data, character) == 0)
+        if (strcasecmp (node->data, character) == 0)
         {
             return 1;
         }
@@ -298,18 +331,24 @@ int fill_character_stack (Tree *tree, Node *node, const char *character, Stack *
 
 void compare (Tree *tree)
 {
+    char *cmd = (char *)calloc (BALCON_LEN + MAX_DEF_LEN, sizeof (char));
+
     printf ("enter first character to compare: ");
+    system_voice (cmd, 1, "..\\balcon -n Irina -t \"enter first character to compare\"");
+
     char first_character[MAX_NAME_LEN] = "";
     scanf (" %[^\n]", first_character);
 
     printf ("enter second character to compare: ");
+    system_voice (cmd, 1, "..\\balcon -n Irina -t \"enter second character to compare\"");
+
     char second_character[MAX_NAME_LEN] = "";
     scanf (" %[^\n]", second_character);
 
     char definition_1[MAX_DEF_LEN] = "";
     char definition_2[MAX_DEF_LEN] = "";
 
-    unsigned int stk_size = 20;
+    int stk_size = 20;
 
     Stack stk_1 = {};
     stack_init (&stk_1, stk_size);
@@ -345,12 +384,15 @@ void compare (Tree *tree)
    // printf ("def_1: %s\n", definition_1);
 
     printf ("\n%s and %s ", first_character, second_character);
+    system_voice (cmd, 5, "..\\balcon -n Irina -t \" ", first_character, " and ", second_character, "\"");
 
     while (is_true_data_1 == is_true_data_2)
     {
         if (is_start)
         {
             printf ("are both ");
+            system_voice (cmd, 1, "..\\balcon -n Irina -t \" are both\"");
+
             is_start = 0;
         }
         else
@@ -361,6 +403,7 @@ void compare (Tree *tree)
         if (is_true_data_1)
         {
             printf ("%s", node->data);
+            system_voice (cmd, 3, "..\\balcon -n Irina -t \" ", node->data, "\"");
 
             shift += strlen (node->data) + comma_size;
 
@@ -376,6 +419,7 @@ void compare (Tree *tree)
         else
         {
             printf ("doesn't %s", node->data);
+            system_voice (cmd, 3, "..\\balcon -n Irina -t \" doesn't ", node->data, "\"");
 
             shift += strlen (node->data) + strlen ("doesn't ") + comma_size;
 
@@ -403,18 +447,20 @@ void compare (Tree *tree)
     if (is_start)
     {
         printf ("have nothing in similar");
+        system_voice (cmd, 1, "..\\balcon -n Irina -t \"have nothing in similar\"");
     }
     printf (".\n");
     if (is_true_data_1 != is_true_data_2)
     {
-     //   printf ("def_1: %s\n", definition_1);
-       // printf ("def_2: %s\n", definition_2);
-
-        //printf ("%d\n", shift);
         printf ("Distinctive qualities of %s: %s.\n", first_character, definition_1 + shift);
+        system_voice (cmd, 4, "..\\balcon -n Irina -t \" Distinctive qualities of ", first_character, definition_1 + shift, "\"");
+
         printf ("Distinctive qualities of %s: %s.\n\n", second_character, definition_2 + shift);
+        system_voice (cmd, 4, "..\\balcon -n Irina -t \" Distinctive qualities of ", second_character, definition_2 + shift, "\"");
     }
 
     stack_dtor  (&stk_2);
     stack_dtor  (&stk_1);
+
+    free (cmd);
 }

@@ -9,5 +9,6 @@ Node *tree_load (Tree *tree, FILE *from);
 Node *tree_save (Tree *tree, FILE *to);
 
 Node *tree_fill (Tree *tree, Node *node, FILE *file, char *buf, int *buf_pos);
+int system_voice (char *cdm, int num,...);
 
 #endif /* INPUT_H */
