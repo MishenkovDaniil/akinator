@@ -10,21 +10,17 @@
 
 static const int MAX_OUTPUT_LEN = 500;
 
-int system_voice (int num, ...)
+int system_voice (const char *format, ...)
 {
     char command[MAX_OUTPUT_LEN]  = "";
 
     va_list str = nullptr;
 
-    va_start (str, num);
+    va_start (str, format);
 
-    for (int i = 0; i < num; i++)
-    {
-        char *string = va_arg (str, char *);
-        strcat (command, string);
-    }
+    vsprintf (command, format, str);
 
-    if (command[MAX_OUTPUT_LEN] != '\0')
+    if (command[MAX_OUTPUT_LEN - 1] != '\0')
     {
         fprintf (stderr, "Error: buffer overflow, function %s in file %s.\n", __PRETTY_FUNCTION__, __FILE__);
         return false;
